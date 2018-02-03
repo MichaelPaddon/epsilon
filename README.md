@@ -9,39 +9,37 @@ Each expression is associated with a token.
 The generated scanner applies the DFA repeatedly to input text to 
 return a sequence of tokens.
 
-Scanners may be generated for a variety of target languages.
-Current targets are:
+Scanners may be generated for a variety of target languages, including
 - Dot (for visualisations)
 - Python
 
-## Status
-
 Epsilon is currently under heavy development.
 It is usable, but probably contains bugs.
-
-More documentation will soon be available.
 
 ## Getting Started
 
 ### Prerequisites
 
 You need [Python](https://www.python.org/) 3.6 or later.
-There are no other dependencies.
 
 ### Installing
 
 Epsilon uses [Setuptools](https://en.wikipedia.org/wiki/Setuptools).
 
 To build and install:
-```
+```sh
 python3 setup.py build
 python3 setup.py install
 ```
 
 You may wish to install under your user account instead
-```
+```sh
 python3 setup.py install --user
 ```
+
+### Using
+
+Please see the [epsilon manual](MANUAL.md).
 
 ## Contributing
 
