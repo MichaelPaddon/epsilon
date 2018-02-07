@@ -128,11 +128,103 @@ and the order of fragment definitions is unimportant.
 Both fragments and tokens may be interpolated.
 
 If you want to use an an open angled bracket in your expression,
-escape it with a backslash, i.e. "`\<`".
+escape it with a preceding backslash, i.e. "`\<`".
 
 ### Regular Expression Syntax
 
-The regular expressions accepted are specified by the following grammar:
+[Regular expressions](https://en.wikipedia.org/wiki/Regular_expression)
+specify a pattern that matches input text.
+Epsilon interprets both expressions and input text as sequnces of Unicode
+codepoints.
+
+Most characters match themselves.
+The *metacharacter* "." matches any codepoint.
+
+Metacharacters may be escaped by preceding them with a backslash.
+This removes their special meaning.
+For instance the expression "\." only matches the "." character.
+
+#### Character Classes
+
+A character class is a sequence of characters enclosed by square brackets.
+This matches matches any character in the class.
+For instance, the expression "[abc]" matches "a" or "b" or "c".
+
+Character classes also support ranges, denoted by a "-".
+For instance, the expression "[A-Za-z]" matches any
+ASCII alphabetical character.
+
+If the first character of a class is "^", the class matches any
+character that is not a member.
+
+The only metacharacters in a class are "\", "-" and "]".
+These may be escaped by a preceding backslash.
+As a special case, a "]" at the start of a class, or a "-" at the start or end of a class, is treated as escaped.
+
+#### Backslash Escapes
+
+Usually a character escaped by a backslash represents itself.
+However, some have a special meaning:
+
+| Escape | Matches |
+| ------ | ------- |
+| \a | alarm (\x07) |
+| \b | backspace (\x08) |
+| \e | escape  (\x1b) |
+| \f | form feed (\x0c) |
+| \n | newline (\x0a) |
+| \r | carriage return (\x0d) |
+| \t | tab (\x09) |
+| \d | any digit character (\p{Nd}) |
+| \D | any character not in \d  |
+| \h | any horizontal whitespace character ([\x09\x20\xa0\u1680\u180e\u2000-\u200a\u202f\u205f\u3000]) |
+| \H | any character not in \h |
+| \s | any whitespace character ([\h\v\pZ]) |
+| \S | any character not in \s |
+| \v | any vertical whitespace character ([\x0a-\x0d\x85\u2028-\u2029]) |
+| \V | any character not in \v |
+| \w | any word character ([\pL\pN\x5f]) |
+| \W | any character not in \w |
+| \pX | any character with the single character Unicode property X |
+| \p{X...} | any character with the named Unicode property |
+| \pX | any character not with the single character Unicode property X |
+| \p{X...} | any character not with the named Unicode property |
+| \DDD | 1, 2 or 3 octal digit codepoint |
+| \o{D...} | 1 or more octal digit codepoint |
+| \xDD | 2 hexadecimal digit codepoint |
+| \x{D...} | 1 or more hexadecimal digit codepoint |
+| \uDDDD | 4 hexadecimal digit codepoint |
+| \UDDDDDDDD | 8 hexadecimal digit codepoint |
+
+#### Quantifiers
+
+An element may be followed by a quantifier:
+
+| Quantifier | Meaning |
+| ---------- | ------- |
+| ? | zero or one instances |
+| * | zero or more instances |
+| + | one or more instances |
+| {n} | exactly n instances |
+| {n,} | n or more instances |
+| {n,m} | at least n, and no more than m, instances |
+
+#### Operators
+
+Epsilon supports the following operators, highest precedence first:
+
+| Operator | Meaning |
+| -------- | ------- |
+| () | grouping |
+| &#124; | logical or (alternation) |
+| & | logical and |
+| ! | complement |
+| (implied) | concatenation |
+
+A sequence of elements implies concatenation.
+
+#### Formal Grammar
+
 ```
 expression = logical_or;
 logical_or = logical_and, {'|', logical_and};
@@ -140,7 +232,7 @@ logical_and = complement, {'&', complement};
 complement = ['!'], concatenation;
     
 concatenation = {quantification};
-quantification = element, [quantifier];
+quantification = atom, [quantifier];
 quantifier = '?' | '*' | '+' | count;
 count = '{', number, [',', [number]], '}';
 element = '(', logical_or, ')'
