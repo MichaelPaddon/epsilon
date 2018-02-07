@@ -142,7 +142,7 @@ The *metacharacter* "." matches any codepoint.
 
 Metacharacters may be escaped by preceding them with a backslash.
 This removes their special meaning.
-For instance the expression "\." only matches the "." character.
+For instance the expression "\\." only matches the "." character.
 
 #### Character Classes
 
@@ -157,7 +157,7 @@ ASCII alphabetical character.
 If the first character of a class is "^", the class matches any
 character that is not a member.
 
-The only metacharacters in a class are "\", "-" and "]".
+The only metacharacters in a class are "\\", "-" and "]".
 These may be escaped by a preceding backslash.
 As a special case, a "]" at the start of a class, or a "-" at the start or end of a class, is treated as escaped.
 
@@ -185,16 +185,16 @@ However, some have a special meaning:
 | \V | any character not in \v |
 | \w | any word character ([\pL\pN\x5f]) |
 | \W | any character not in \w |
-| \pX | any character with the single character Unicode property X |
+| \pX | any character with the single character Unicode general property X |
 | \p{X...} | any character with the named Unicode property |
-| \pX | any character not with the single character Unicode property X |
-| \p{X...} | any character not with the named Unicode property |
-| \DDD | 1, 2 or 3 octal digit codepoint |
-| \o{D...} | 1 or more octal digit codepoint |
-| \xDD | 2 hexadecimal digit codepoint |
-| \x{D...} | 1 or more hexadecimal digit codepoint |
-| \uDDDD | 4 hexadecimal digit codepoint |
-| \UDDDDDDDD | 8 hexadecimal digit codepoint |
+| \PX | any character not in \pX |
+| \p{X...} | any character not in \p{X...} |
+| \ddd | 1, 2 or 3 octal digit codepoint |
+| \o{d...} | 1 or more octal digit codepoint |
+| \xhh | 2 hexadecimal digit codepoint |
+| \x{h...} | 1 or more hexadecimal digit codepoint |
+| \uhhhh | 4 hexadecimal digit codepoint |
+| \Uhhhhhhhh | 8 hexadecimal digit codepoint |
 
 #### Quantifiers
 
