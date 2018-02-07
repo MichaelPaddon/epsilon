@@ -53,7 +53,8 @@ For the versions available, see the
 
 ## Authors
 
-See the list of [authors](AUTHORS) who participated in this project.
+See the list of [authors](AUTHORS) and [contributors](CONTRIBUTORS)
+who participated in this project.
 
 ## License
 
