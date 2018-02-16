@@ -15,6 +15,8 @@ Scanners may be generated for a variety of target languages, including
 
 Epsilon is currently under heavy development.
 It is usable, but probably contains bugs.
+Please log any
+[issues](https://github.com/MichaelPaddon/epsilon/issues) you find.
 
 ## Getting Started
 
