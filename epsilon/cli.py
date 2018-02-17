@@ -18,6 +18,7 @@ import argparse
 import configparser
 import collections
 import os.path
+import re
 import sys
 from . import dfa
 from . import parse
@@ -32,48 +33,43 @@ _targets = collections.OrderedDict([
         ("python", target_python.Target)])
 
 class _Interpolation(configparser.Interpolation):
+    _re_braces = re.compile(
+            r"(\{[^}]*})"
+            r"|\\\{"
+            r"|\{[0-9]+(,[0-9]*)}"
+            r"|\\[opPx]\{[^}]*}")
+
     def before_get(self, parser, section, option, value, defaults):
         return self._interpolate(parser, section, option, value, 1)
 
     def _interpolate(self, parser, section, option, value, depth):
         if depth > configparser.MAX_INTERPOLATION_DEPTH:
             raise configparser.InterpolationDepthError(option, section, value)
+
         fragments = []
-        escape = False
-        start = offset = 0
+        offset = 0
         while offset < len(value):
-            if escape:
-                escape = False
-                offset += 1
-            elif value[offset] == "\\":
-                escape = True
-                offset += 1
-            elif value[offset] == "<":
-                if start < offset:
-                    fragments.append(value[start:offset])
-                offset += 1
-                end = value.find(">", offset)
-                if end < 0:
-                    msg = "Unterminated interpolation: "\
-                            "option {!r} in section {!r} is missing a '>'. "\
-                            "Raw value: {!r}".format(option, section, value)
-                    raise configparser.InterpolationSyntaxError(
-                            option, section, msg)
-                name = value[offset:end]
-                rawvalue = parser.get(section, name,
-                        raw = True, fallback = None)
-                if rawvalue is None:
-                    raise configparser.InterpolationMissingOptionError(
-                            option, section, value, name)
-                interpolated = self._interpolate(
-                        parser, section, option, rawvalue, depth + 1)
-                if interpolated:
-                    fragments.append(interpolated)
-                start = offset = end + 1
+            match = self._re_braces.search(value, offset)
+            if match:
+                start, end = match.span()
+                if match.group(1):
+                    name = value[start+1:end-1]
+                    interpolated = parser.get(section, name,
+                            raw = True, fallback = None)
+                    if interpolated is None:
+                        raise configparser.InterpolationMissingOptionError(
+                                option, section, value, name)
+                    fragments.append(value[offset:start])
+                    fragments.append(self._interpolate(
+                            parser, section, option, interpolated, depth + 1))
+                    offset = end
+                else:
+                    fragments.append(value[offset:end])
+                    offset = end
             else:
-                offset += 1
-        if start < offset:
-            fragments.append(value[start:offset])
+                fragments.append(value[offset:])
+                break
+
         return "".join(fragments)
 
 def _compile(paths, target):
