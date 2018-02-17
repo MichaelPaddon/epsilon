@@ -24,8 +24,8 @@ _letter = [_A-Za-z]
 _digit = [0-9]
 
 # tokens
-identifier = <_letter>(<_letter>|<_digit>)*
-number = <_digit>+
+identifier = {_letter{({_letter}|{_digit})*
+number = {_digit}+
 other = .
 ```
 
@@ -121,14 +121,16 @@ This supports the reuse of common sub-expressions.
 
 ### Interpolation Syntax
 
-Interpolation is invoked by angle brackets.
-For example "`<_letter>`" is replaced by the definition of *_letter*.
+Interpolation is invoked by matched braces.
+For example "`{_letter}`" is replaced by the definition of *_letter*.
 Interpolation may be nested,
 and the order of fragment definitions is unimportant. 
 Both fragments and tokens may be interpolated.
 
-If you want to use an an open angled bracket in your expression,
-escape it with a preceding backslash, i.e. "`\<`".
+An open brace may be escaped by preceding it with a backslash, i.e. "`\{`".
+In addition, matched braces that can be interpreted as part of the regular
+expression are *not* interpolated. This includes repetition counts and
+backslash escapes that use braces.
 
 ### Regular Expression Syntax
 
