@@ -33,6 +33,8 @@ _targets = collections.OrderedDict([
         ("python", target_python.Target)])
 
 class _Interpolation(configparser.Interpolation):
+    _MAX_INTERPOLATION_DEPTH = 100
+
     _re_braces = re.compile(
             r"(\{[^}]*})"
             r"|\\\{"
@@ -43,7 +45,7 @@ class _Interpolation(configparser.Interpolation):
         return self._interpolate(parser, section, option, value, 1)
 
     def _interpolate(self, parser, section, option, value, depth):
-        if depth > configparser.MAX_INTERPOLATION_DEPTH:
+        if depth > self._MAX_INTERPOLATION_DEPTH:
             raise configparser.InterpolationDepthError(option, section, value)
 
         fragments = []
