@@ -33,8 +33,6 @@ _targets = collections.OrderedDict([
         ("python", target_python.Target)])
 
 class _Interpolation(configparser.Interpolation):
-    _MAX_INTERPOLATION_DEPTH = 100
-
     _re_braces = re.compile(
             r"(\{[^}]*})"
             r"|\\\{"
@@ -42,12 +40,9 @@ class _Interpolation(configparser.Interpolation):
             r"|\\[opPx]\{[^}]*}")
 
     def before_get(self, parser, section, option, value, defaults):
-        return self._interpolate(parser, section, option, value, 1)
+        return self._interpolate(parser, section, option, value, set())
 
-    def _interpolate(self, parser, section, option, value, depth):
-        if depth > self._MAX_INTERPOLATION_DEPTH:
-            raise configparser.InterpolationDepthError(option, section, value)
-
+    def _interpolate(self, parser, section, option, value, seen):
         fragments = []
         offset = 0
         while offset < len(value):
@@ -56,6 +51,9 @@ class _Interpolation(configparser.Interpolation):
                 start, end = match.span()
                 if match.group(1):
                     name = value[start+1:end-1]
+                    if name in seen:
+                        raise configparser.InterpolationError(name, section,
+                                "{}: interpolation loop detected".format(name))
                     interpolated = parser.get(section, name,
                             raw = True, fallback = None)
                     if interpolated is None:
@@ -63,7 +61,7 @@ class _Interpolation(configparser.Interpolation):
                                 option, section, value, name)
                     fragments.append(value[offset:start])
                     fragments.append(self._interpolate(
-                            parser, section, option, interpolated, depth + 1))
+                            parser, section, name, interpolated, seen.union({name})))
                     offset = end
                 else:
                     fragments.append(value[offset:end])
