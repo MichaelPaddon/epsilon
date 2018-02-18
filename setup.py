@@ -14,9 +14,10 @@ setuptools.setup(
     description = "A lexical scanner generator.",
     url = "https://github.com/MichaelPaddon/epsilon",
     license = "GPLv3",
-    keywords = "lexer",
+    keywords = "lexer scanner",
 
     packages = setuptools.find_packages(),
+    include_package_data = True,
     entry_points = {
         "console_scripts": ["epsilon = epsilon.cli:main"]
     },
