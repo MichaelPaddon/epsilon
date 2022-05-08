@@ -20,6 +20,7 @@ import collections
 import os.path
 import re
 import sys
+import contextlib
 from . import dfa
 from . import parse
 from . import target_dot

@@ -24,7 +24,7 @@ _letter = [_A-Za-z]
 _digit = [0-9]
 
 # tokens
-identifier = {_letter{({_letter}|{_digit})*
+identifier = {_letter}({_letter}|{_digit})*
 number = {_digit}+
 other = .
 ```
